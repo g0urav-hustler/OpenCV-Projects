@@ -12,7 +12,7 @@ mpDraw = mp.solutions.drawing_utils
 # for timing
 ptime, ctime = 0,0
 
-while True:
+while cap.isOpened():
     success, img = cap.read()
 
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # it require rgb image
@@ -39,8 +39,13 @@ while True:
     cv2.putText(img, str(int(fps)), (10,70), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,255),3 ) 
 
     
-    cv2.imshow("image", img)
-    cv2.waitKey(1)
+    if success:
+        cv2.imshow("img",img)
+        
+        if cv2.waitKey(25) & 0xff == ord('q'):
+            break
+    
 
-# cap.release()
-# cv2.destroyAllWindows()
+
+    cap.release()
+    cv2.destroyAllWindows()

@@ -69,7 +69,7 @@ def main():
 
     detector = handDetector() # making the object 
 
-    while True:
+    while cap.isOpened():
         success, img = cap.read()
 
         img = detector.findhands(img)
@@ -86,8 +86,16 @@ def main():
         cv2.putText(img, str(int(fps)), (10,70), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,255),3 ) 
 
         
-        cv2.imshow("image", img)
-        cv2.waitKey(1)
+        if success:
+         cv2.imshow("img",img)
+         
+         if cv2.waitKey(25) & 0xff == ord('q'):
+            break
+    
+
+
+    cap.release()
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
      main()
