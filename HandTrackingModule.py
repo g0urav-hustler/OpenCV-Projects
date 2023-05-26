@@ -33,25 +33,34 @@ class handDetector():
     def findhands(self,img, draw = True):
 
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # it require rgb image
-        result = self.hands.process(imgRGB)
+        self.results = self.hands.process(imgRGB)
 
-        if result.multi_hand_landmarks:  # if hand mark is detected
-            for handLms in result.multi_hand_landmarks: # for more hands
+        if self.results.multi_hand_landmarks:  # if hand mark is detected
+            for handLms in self.results.multi_hand_landmarks: # for more hands
                 if draw:
-                    self.mpDraw.draw_landmarks(img, handLms, self.mphands.HAND_CONNECTIONS)
+                    self.mpDraw.draw_landmarks(img, handLms, self.mpHands.HAND_CONNECTIONS)
         
 
         return img
 
-                # for id, lm in enumerate(handLms.landmark):
-                    # h,w,c = img.shape # hieght, width , channels
-                    # cx, cy = int(lm.x * w), int(lm.y * h)
-                    
-                    # # Checking ids
-                    # cv2.putText(img, str(int(id)), (cx,cy), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 1)
+                
+    def findPositions(self, img, handNo = 0, draw = True):
+         
+         lmList = [] # landmark list
 
+         if self.results.multi_hand_landmarks:
+              myHand = self.results.multi_hand_landmarks[handNo]
+              
+              for id, lm in enumerate(myHand.landmark):
+                    h,w,c = img.shape # hieght, width , channels
+                    cx, cy = int(lm.x * w), int(lm.y * h)
 
-    
+                    lmList.append([id,cx,cy])
+                    # Checking ids
+                    if draw:
+                        cv2.putText(img, str(int(id)), (cx,cy), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 1)
+
+         return lmList
 
 def main():
 
@@ -64,6 +73,13 @@ def main():
         success, img = cap.read()
 
         img = detector.findhands(img)
+
+        lmlist = detector.findPositions(img,)
+        
+        if len(lmlist) !=0:
+            print(lmlist[8])
+
+
         ctime = time.time()
         fps = 1/(ctime -ptime)
         ptime = ctime
