@@ -32,6 +32,10 @@ volume.SetMasterVolumeLevel(-20.0, None)
 minVol = volRange[0]
 maxVol = volRange[1]
 
+vol =0
+volBar = 400
+volper =0
+
 while cap.isOpened():
     success, img = cap.read()
     img = cv2.flip(img, 1)
@@ -53,8 +57,37 @@ while cap.isOpened():
 
         length = math.hypot(x2-x1, y2-y1)
 
+        # hand length = 30 to 300
+        # volume = -65 to 0
+
+        vol = np.interp(length, [30,300], [minVol, maxVol])
+        volBar = np.interp(length, [30,300], [400, 150])
+        volper = np.interp(length, [30,300], [0,100])
+
+        print(vol)
+        # volume.SetMasterVolumeLevel(vol, None)
+        if last_length:
+            if length>last_length:
+                keyboard.press(Key.media_volume_up)
+                keyboard.release(Key.media_volume_up)
+                print("VOL UP")
+            elif length<last_length:
+                keyboard.press(Key.media_volume_down)
+                keyboard.release(Key.media_volume_down)
+                print("VOL DOWN")
+        
+        last_angle=angle
+        last_length=length
+
         if length< 30:
             cv2.circle(img, (cx,cy), 10, (0,255,0), cv2.FILLED)
+
+    cv2.rectangle(img, (50,150), (85,400), (255,0,0), 2)
+    cv2.rectangle(img, (50, int(volBar)), (85,400), (255,0,0), cv2.FILLED )
+
+    cv2.putText(img, str(int(volper)), (40,450), cv2.FONT_HERSHEY_COMPLEX, 1, (255,0,0), 2)
+
+            
 
     if success:
         cv2.imshow("img",img)
