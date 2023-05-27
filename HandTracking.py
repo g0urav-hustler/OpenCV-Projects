@@ -22,7 +22,7 @@ while cap.isOpened():
     if result.multi_hand_landmarks:  # if hand mark is detected
         for handLms in result.multi_hand_landmarks: # for more hands
             for id, lm in enumerate(handLms.landmark):
-                h,w,c = img.shape # hieght, width , channels
+                h,w,c = img.shape # height, width , channels
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 
                 # Checking ids
@@ -47,5 +47,5 @@ while cap.isOpened():
     
 
 
-    cap.release()
-    cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()

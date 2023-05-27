@@ -4,10 +4,10 @@ import time
 
 
 
-mphands = mp.solutions.hands # compulsory code
+# mphands = mp.solutions.hands # compulsory code
 
-hands = mphands.Hands()
-mpDraw = mp.solutions.drawing_utils
+# hands = mphands.Hands()
+# mpDraw = mp.solutions.drawing_utils
 
 
 class handDetector():
@@ -74,7 +74,7 @@ def main():
 
         img = detector.findhands(img)
 
-        lmlist = detector.findPositions(img,)
+        lmlist = detector.findPositions(img)
         
         if len(lmlist) !=0:
             print(lmlist[8])
@@ -83,7 +83,7 @@ def main():
         ctime = time.time()
         fps = 1/(ctime -ptime)
         ptime = ctime
-        cv2.putText(img, str(int(fps)), (10,70), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,255),3 ) 
+        cv2.putText(img, str(int(fps)), (10,50), cv2.FONT_HERSHEY_PLAIN, 3, (255,0,255),3 ) 
 
         
         if success:
@@ -101,5 +101,3 @@ if __name__ == "__main__":
      main()
 
 
-# cap.release()
-# cv2.destroyAllWindows()
