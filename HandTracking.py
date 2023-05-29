@@ -14,6 +14,7 @@ ptime, ctime = 0,0
 
 while cap.isOpened():
     success, img = cap.read()
+    img = cv2.flip(img,1)
 
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # it require rgb image
 
@@ -26,7 +27,9 @@ while cap.isOpened():
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 
                 # Checking ids
-                cv2.putText(img, str(int(id)), (cx,cy), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 1)
+                # cv2.putText(img, str(int(id)), (cx,cy), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 1)
+                if id == 8:
+                    print(cx, cy)
 
 
             mpDraw.draw_landmarks(img, handLms, mphands.HAND_CONNECTIONS)
