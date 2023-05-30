@@ -23,8 +23,13 @@ cap = cv2.VideoCapture(0)
 # cap.set(3, wcam)
 # cap.set(4, hcam)
 
-
+drawColor = (255, 0, 255)
 detector = htm.handDetector(detectionCon= 0.85) # high confidence
+
+xp , yp = 0,0
+
+imgCanvas = np.zeros((720,1280,3 ), np.uint8)
+
 while cap.isOpened():
 
     success, img = cap.read()
@@ -59,9 +64,7 @@ while cap.isOpened():
         fingers = detector.fingersUp()
 
         if fingers[0] and fingers[1]:
-            print("Selection mode")
-
-            # xp,yp=0,0
+            xp,yp=0,0
             #print("Selection Mode")
             #checking for click
             if y1 < 125:
@@ -82,11 +85,22 @@ while cap.isOpened():
 
         
         if fingers[0] and (fingers[1] == False):
-            print("Drawing mode")
+
+            cv2.circle(img, (x1,y1), 15, drawColor, cv2.FILLED)
+
+            if xp ==0 and yp ==0:
+                xp, yp = x1, y1
+
+            cv2.line(img, (xp, yp), (x1,y1), drawColor, 15)
+            cv2.line(imgCanvas, (xp, yp), (x1,y1), drawColor, 15)
+
+            xp, yp = x1, y1
+            # print("Drawing mode")
     
 
     if success:
         cv2.imshow("img", img)
+        cv2.imshow("canvas", imgCanvas)
         if cv2.waitKey(1) & 0xff == ord('q'):
             break
 
