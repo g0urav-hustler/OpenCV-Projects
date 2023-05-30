@@ -55,11 +55,35 @@ while cap.isOpened():
         x1,y1 = lmList[8][1], lmList[8][2]
         x2,y2 = lmList[12][1], lmList[12][2]
 
-    # fingers up
+         # fingers up
+        fingers = detector.fingersUp()
 
-    fingers = detector.fingersUp()
+        if fingers[0] and fingers[1]:
+            print("Selection mode")
 
-    print(fingers)
+            # xp,yp=0,0
+            #print("Selection Mode")
+            #checking for click
+            if y1 < 125:
+                if 250 < x1 < 450:#if i m clicking at purple brush
+                    header = overlayList[0]
+                    drawColor = (255, 0, 255)
+                elif 550 < x1 < 750:#if i m clicking at blue brush
+                    header = overlayList[1]
+                    drawColor = (255, 0, 0)
+                elif 800 < x1 < 950:#if i m clicking at green brush
+                    header = overlayList[2]
+                    drawColor = (0, 255, 0)
+                elif 1050 < x1 < 1200:#if i m clicking at eraser
+                    header = overlayList[3]
+                    drawColor = (0, 0, 0)
+            cv2.rectangle(img, (x1, y1 - 25), (x2, y2 + 25), drawColor, cv2.FILLED)#selection mode is represented as rectangle
+
+
+        
+        if fingers[0] and (fingers[1] == False):
+            print("Drawing mode")
+    
 
     if success:
         cv2.imshow("img", img)

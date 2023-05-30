@@ -70,11 +70,12 @@ class handDetector():
         
 
         # Fingers
-        for id in range(no_fingers):#checking tip point is below tippoint-2 (only in Y direction)
-            if self.lmlist[self.tipIds[id]][2] < self.lmlist[self.tipIds[id] - 2][2]:
-                fingers.append(1)
-            else:
-                fingers.append(0)
+        if len(self.lmList) !=0:
+            for id in range(no_fingers):#checking tip point is below tippoint-2 (only in Y direction)
+                if self.lmList[self.tipIds[id]][2] < self.lmList[self.tipIds[id] - 2][2]:
+                    fingers.append(1)
+                else:
+                    fingers.append(0)
 
             # totalFingers = fingers.count(1)
 
