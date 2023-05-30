@@ -29,6 +29,7 @@ class handDetector():
                                             min_detection_confidence=self.detectionCon,
                                             min_tracking_confidence=self.minTrackCon)
             self.mpDraw = mp.solutions.drawing_utils
+            self.tipIds = [8, 12, 16, 20]
         
     def findhands(self,img, draw = True):
 
@@ -45,10 +46,9 @@ class handDetector():
     
 
 
-                
     def findPositions(self, img, handNo = 0, draw = True):
          
-         lmList = [] # landmark list
+         self.lmList = [] # landmark list
 
          if self.results.multi_hand_landmarks:
               myHand = self.results.multi_hand_landmarks[handNo]
@@ -57,12 +57,28 @@ class handDetector():
                     h,w,c = img.shape # hieght, width , channels
                     cx, cy = int(lm.x * w), int(lm.y * h)
 
-                    lmList.append([id,cx,cy])
+                    self.lmList.append([id,cx,cy])
                     # Checking ids
                     if draw:
                         cv2.putText(img, str(int(id)), (cx,cy), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,255), 1)
 
-         return lmList
+         return self.lmList
+    
+    def fingersUp(self, no_fingers = 4):#checking which finger is open 
+        fingers = []#storing final result
+        # Thumb < sign only when  we use flip function to avoid mirror inversion else > sign
+        
+
+        # Fingers
+        for id in range(no_fingers):#checking tip point is below tippoint-2 (only in Y direction)
+            if self.lmlist[self.tipIds[id]][2] < self.lmlist[self.tipIds[id] - 2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
+
+            # totalFingers = fingers.count(1)
+
+        return fingers
 
 def main():
 
