@@ -190,6 +190,9 @@ def main():
         
             if cv2.waitKey(1) & 0xff == ord('q'):
                 break
+    
+    cap.release()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
