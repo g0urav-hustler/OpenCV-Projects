@@ -152,7 +152,7 @@ class HandDetector:
 def main():
     cap = cv2.VideoCapture(0)
     detector = HandDetector(detectionCon=0.8, maxHands=2)
-    while True:
+    while cap.isOpened():
         # Get image frame
         success, img = cap.read()
         # Find the hand and its landmarks
@@ -182,9 +182,14 @@ def main():
                 # Find Distance between two Landmarks. Could be same hand or different hands
                 length, info, img = detector.findDistance(lmList1[8][0:2], lmList2[8][0:2], img)  # with draw
                 # length, info = detector.findDistance(lmList1[8], lmList2[8])  # with draw
+
+
         # Display
-        cv2.imshow("Image", img)
-        cv2.waitKey(1)
+        if success:
+            cv2.imshow("img",img)
+        
+            if cv2.waitKey(1) & 0xff == ord('q'):
+                break
 
 
 if __name__ == "__main__":
