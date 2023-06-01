@@ -29,6 +29,8 @@ detector = htm.handDetector(detectionCon= 0.85) # high confidence
 xp , yp = 0,0
 
 imgCanvas = np.zeros((720,1280,3 ), np.uint8)
+brushThickness = 15
+eraserThickness = 30
 
 while cap.isOpened():
 
@@ -91,16 +93,33 @@ while cap.isOpened():
             if xp ==0 and yp ==0:
                 xp, yp = x1, y1
 
-            cv2.line(img, (xp, yp), (x1,y1), drawColor, 15)
-            cv2.line(imgCanvas, (xp, yp), (x1,y1), drawColor, 15)
-
-            xp, yp = x1, y1
-            # print("Drawing mode")
+            if drawColor == (0, 0, 0):
+                cv2.line(img, (xp, yp), (x1, y1), drawColor, eraserThickness)
+                cv2.line(imgCanvas, (xp, yp), (x1, y1), drawColor, eraserThickness)
+            else:
+                cv2.line(img, (xp, yp), (x1, y1), drawColor, brushThickness)#gonna draw lines from previous coodinates to new positions 
+                cv2.line(imgCanvas, (xp, yp), (x1, y1), drawColor, brushThickness)
+            xp,yp=x1,y1
+            #print("Drawing mode")
+    
+    # 1 converting img to gray
+    imgGray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
+    
+    # 2 converting into binary image and thn inverting
+    _, imgInv = cv2.threshold(imgGray, 50, 255, cv2.THRESH_BINARY_INV)#on canvas all the region in which we drew is black and where it is black it is cosidered as white,it will create a mask
+    
+    imgInv = cv2.cvtColor(imgInv,cv2.COLOR_GRAY2BGR)#converting again to gray bcoz we have to add in a RGB image i.e img
+    
+    #add original img with imgInv ,by doing this we get our drawing only in black color
+    img = cv2.bitwise_and(img,imgInv)
+    
+    #add img and imgcanvas,by doing this we get colors on img
+    img = cv2.bitwise_or(img,imgCanvas)
     
 
     if success:
         cv2.imshow("img", img)
-        cv2.imshow("canvas", imgCanvas)
+        # cv2.imshow("canvas", imgCanvas)
         if cv2.waitKey(1) & 0xff == ord('q'):
             break
 
