@@ -11,6 +11,8 @@ cap.set(4, hCam)
 while cap.isOpened():
     success, img = cap.read()
 
+    
+
     if success:
         cv2.imshow("img", img)
 
