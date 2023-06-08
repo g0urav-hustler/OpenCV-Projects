@@ -24,7 +24,7 @@ cap = cv2.VideoCapture(0)
 # cap.set(4, hcam)
 
 drawColor = (255, 0, 255)
-detector = htm.handDetector(detectionCon= 0.85) # high confidence
+detector = htm.HandDetector(detectionCon= 0.85) # high confidence
 
 xp , yp = 0,0
 
@@ -49,23 +49,23 @@ while cap.isOpened():
     5. drawing mode if index finger is up
 
     """
-
-    # find hand landmarks
-    img = detector.findhands(img)
-
-    lmList = detector.findPositions(img, draw= False)
-
-  
-
-    if len(lmList) != 0:
+    draw = True
+    lm, img = detector.findHands(img, draw = draw)
+    if draw :
+        lm = lm[0]
+    else:
+        lm = lm
+        
+    if len(lm) != 0:
+        lmList = lm[0][0]['lmList']
         # tip of indexes
-        x1,y1 = lmList[8][1], lmList[8][2]
-        x2,y2 = lmList[12][1], lmList[12][2]
+        
 
          # fingers up
-        fingers = detector.fingersUp()
+        fingers = detector.fingersUp({'type': "Left", 'lmList': lmList})
 
-        if fingers[0] and fingers[1]:
+
+        if fingers[1] and fingers[2]:
             xp,yp=0,0
             #print("Selection Mode")
             #checking for click
@@ -86,7 +86,7 @@ while cap.isOpened():
 
 
         
-        if fingers[0] and (fingers[1] == False):
+        if fingers[1] and (fingers[2] == False):
 
             cv2.circle(img, (x1,y1), 15, drawColor, cv2.FILLED)
 

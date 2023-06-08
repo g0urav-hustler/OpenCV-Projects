@@ -89,7 +89,7 @@ class HandDetector:
         if draw:
             return allHands, img
         else:
-            return allHands
+            return allHands, img
 
     def fingersUp(self, myHand):
         """
