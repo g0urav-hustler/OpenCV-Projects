@@ -180,7 +180,7 @@ def main():
                 fingers2 = detector.fingersUp(hand2)
 
                 # Find Distance between two Landmarks. Could be same hand or different hands
-                length, info, img = detector.findDistance(lmList1[8][0:2], lmList2[8][0:2], img)  # with draw
+                length, info, img = detector.fiqndDistance(lmList1[8][0:2], lmList2[8][0:2], img)  # with draw
                 # length, info = detector.findDistance(lmList1[8], lmList2[8])  # with draw
 
 

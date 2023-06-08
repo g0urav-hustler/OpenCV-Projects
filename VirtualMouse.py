@@ -5,6 +5,11 @@ import numpy as np
 
 
 wScr, hScr = autopy.screen.size() # getting screen size 
+fReduce = 50 # for detection
+smoothening = 5 # for smooth cursor 
+plocx, plocy = 0,0
+clocx, clocy = 0,0
+
 wCam, hCam = 640, 480
 cap = cv2.VideoCapture(0)
 
@@ -25,22 +30,49 @@ while cap.isOpened():
 
         fingers = detector.fingersUp({"type": "Right", "lmList": lmList})
 
-        print(x1,y1)
+
+
+        # detection area
+        cv2.rectangle(img ,(fReduce, fReduce), (wCam -fReduce, hCam-fReduce), (255,0,255), 8)
+
 
         # selection mode
-        # if fingers[1] and fingers[2]:
-        #     # xp,yp=0,0
+        if fingers[1] and fingers[2]:
+            length ,info, img = detector.findDistance([x1,y1],[x2,y2], img)
+            cx, cy = info[4],info[5]
+
+            # clocx = plocx + (cx - plocx)/ smoothening
+            # clocy = plocy + (cy - plocy)/ smoothening
+
+
+
+            if length < 30:
+                cv2.circle(img, (cx,cy), 15, (0,255,0), cv2.FILLED)
+
+                # click the mouse
+                autopy.mouse.click()
+            
+            # moving in two finger
+            # autopy.mouse.move(clocx, clocy)
+            # plocx , plocy = clocx, clocy
+
         
         # moving mode
         if fingers[1] and (fingers[2] == False):
             # xp,yp=x1,y1
 
+            cv2.circle(img, (x1,y1), 15, (255,0,255), cv2.FILLED)
             # converting coordinates
-            x3 = np.interp(x1, (0,wCam), (0,wScr))
-            y3 = np.interp(y1, (0,hCam), (0,hScr))
+            x3 = np.interp(x1, (fReduce,wCam-fReduce), (0,wScr))
+            y3 = np.interp(y1, (fReduce,hCam-fReduce), (0,hScr))
+
+            # cursor smoothing
+            clocx = plocx + (x3 - plocx)/ smoothening
+            clocy = plocy + (y3 - plocy)/ smoothening
             
             # move the mouse
-            autopy.mouse.move(x3,y3)
+            autopy.mouse.move(clocx,clocy)
+            plocx , plocy = clocx, clocy
 
     
     if success:
