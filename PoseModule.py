@@ -9,7 +9,7 @@ class PoseDetector:
     """
 
     def __init__(self, mode=False, smooth=True,
-                 detectionCon=0.5, trackCon=0.5, upBody = False):
+                 detectionCon=0.5, trackCon=0.5):
         """
         :param mode: In static mode, detection is done on each image: slower
         :param upBody: Upper boy only flag
@@ -22,7 +22,6 @@ class PoseDetector:
         self.smooth = smooth
         self.detectionCon = detectionCon
         self.trackCon = trackCon
-        self.upBody = upBody
 
         self.mpDraw = mp.solutions.drawing_utils
         self.mpPose = mp.solutions.pose
@@ -30,7 +29,7 @@ class PoseDetector:
                                      smooth_landmarks=self.smooth,
                                      min_detection_confidence=self.detectionCon,
                                      min_tracking_confidence=self.trackCon,
-                                     upBody = self.upBody)
+                                     )
     
     def findPose(self, img, draw=True):
         """
@@ -47,38 +46,61 @@ class PoseDetector:
                                            self.mpPose.POSE_CONNECTIONS)
         return img
     
+    def findPosition(self, img, draw=True, bboxWithHands=False):
+        self.lmList = []
+        self.bboxInfo = {}
+        if self.results.pose_landmarks:
+            for id, lm in enumerate(self.results.pose_landmarks.landmark):
+                h, w, c = img.shape
+                cx, cy, cz = int(lm.x * w), int(lm.y * h), int(lm.z * w)
+                self.lmList.append([id, cx, cy, cz])
+
+            # Bounding Box
+            ad = abs(self.lmList[12][1] - self.lmList[11][1]) // 2
+            if bboxWithHands:
+                x1 = self.lmList[16][1] - ad
+                x2 = self.lmList[15][1] + ad
+            else:
+                x1 = self.lmList[12][1] - ad
+                x2 = self.lmList[11][1] + ad
+
+            y2 = self.lmList[29][2] + ad
+            y1 = self.lmList[1][2] - ad
+            bbox = (x1, y1, x2 - x1, y2 - y1)
+            cx, cy = bbox[0] + (bbox[2] // 2), \
+                     bbox[1] + bbox[3] // 2
+
+            self.bboxInfo = {"bbox": bbox, "center": (cx, cy)}
+
+            if draw:
+                cv2.rectangle(img, bbox, (255, 0, 255), 3)
+                cv2.circle(img, (cx, cy), 5, (255, 0, 0), cv2.FILLED)
+
+        return self.lmList, self.bboxInfo
 
 def main():
-    vid_path = str(input("Enter video path: "))
+    # vid_path = str(input("Enter video path: "))
 
-    mpPose = mp.solutions.pose
-    pose = mpPose.Pose()
-    mpDraw = mp.solutions.drawing_utils
+    vid_path = "dancer_videos/one_pers_dance_2.mp4"
+
+    detector = PoseDetector()
+    
+
+    # mpPose = mp.solutions.pose
+    # pose = mpPose.Pose()
+    # mpDraw = mp.solutions.drawing_utils
     cap = cv2.VideoCapture(vid_path)
     # fps= int(cap.get(cv2.CAP_PROP_FPS))
 
 
     while cap.isOpened():
         success, img = cap.read()
-
-        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-        results = pose.process(imgRGB)
-
         img = cv2.resize(img, (550,600))
+        img = detector.findPose(img)
+
+        lm, bbox = detector.findPosition(img, draw= True, bboxWithHands=True)
 
         if success:
-
-            if results.pose_landmarks:
-                mpDraw.draw_landmarks(img, results.pose_landmarks, mpPose.POSE_CONNECTIONS)
-
-                for id, lm in enumerate(results.pose_landmarks.landmark):
-                    h, w, c = img.shape
-
-                    cx , cy = int(lm.x*w) , int(lm.y*h)
-                
-
-            # time.sleep(1/fps)
             cv2.imshow("vid", img)
 
             if cv2.waitKey(20) & 0xff == ord('q'):

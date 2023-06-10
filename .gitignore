@@ -1,4 +1,5 @@
 # files to ignore
+__pycache__
 temp.py
 
 # for video files
