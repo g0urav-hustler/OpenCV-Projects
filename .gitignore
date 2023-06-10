@@ -1,2 +1,6 @@
 # files to ignore
 temp.py
+
+# for video files
+/dancer_videos
+*.mp4
